@@ -5,7 +5,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/xbclub/BilibiliDanmuRobot-Core/svc"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/svc"
 
 	gogpt "github.com/sashabaranov/go-openai"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -23,11 +23,11 @@ func RequestChatgptRobot(msg string, svcCtx *svc.ServiceContext) (string, error)
 		prompt += fmt.Sprintf(" 尽可能的在%v个字内回答", svcCtx.Config.DanmuLen)
 	}
 	req := gogpt.ChatCompletionRequest{
-		Model: svcCtx.Config.ChatGPT.Model, //gogpt.GPT3Dot5Turbo0613,
+		Model: svcCtx.Config.ChatGPT.Model, // gogpt.GPT3Dot5Turbo0613,
 		Messages: []gogpt.ChatCompletionMessage{
 			{
 				Role: gogpt.ChatMessageRoleAssistant,
-				//Content: fmt.Sprintf("你是一个非常幽默的机器人助理，尽可能的在%v个字符内回答，不要使用emoji等表情符号，可以使用颜文字", svcCtx.Config.DanmuLen),
+				// Content: fmt.Sprintf("你是一个非常幽默的机器人助理，尽可能的在%v个字符内回答，不要使用emoji等表情符号，可以使用颜文字", svcCtx.Config.DanmuLen),
 				Content: prompt,
 			},
 			{

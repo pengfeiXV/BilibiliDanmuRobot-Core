@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/avast/retry-go/v4"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/entity"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/svc"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/entity"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/svc"
 	"github.com/zeromicro/go-zero/core/logx"
 	"io"
 	"mime/multipart"
@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-//func GetDanmuInfo(svcCtx *svc.ServiceContext) (*entity.ResponseBulletInfo, error) {
+// func GetDanmuInfo(svcCtx *svc.ServiceContext) (*entity.ResponseBulletInfo, error) {
 //	var err error
 //	var resp *resty.Response
 //	var url = "https://api.live.bilibili.com/xlive/web-room/v1/index/getDanmuInfo?id=" + strconv.Itoa(svcCtx.Config.RoomId) + "&type=0"
@@ -32,7 +32,7 @@ import (
 //	}
 //
 //	return r, nil
-//}
+// }
 
 func Send(msg string, svcCtx *svc.ServiceContext, reply ...*entity.DanmuMsgTextReplyInfo) error {
 	var err error
@@ -42,12 +42,12 @@ func Send(msg string, svcCtx *svc.ServiceContext, reply ...*entity.DanmuMsgTextR
 	m["bubble"] = "5"
 	m["msg"] = msg
 	m["color"] = "4546550"
-	//m["mode"] = "4"
+	// m["mode"] = "4"
 	m["fontsize"] = "25"
 	m["rnd"] = strconv.FormatInt(time.Now().Unix(), 10)
-	//m["room_type"] = "0"
-	//m["jumpfrom"] = "0"
-	//m["reply_attr"] = "0"
+	// m["room_type"] = "0"
+	// m["jumpfrom"] = "0"
+	// m["reply_attr"] = "0"
 	if len(reply) > 0 {
 		m["reply_mid"] = reply[0].ReplyUid
 		if len(reply[0].ReplyMsgId) > 0 {

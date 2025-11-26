@@ -5,7 +5,7 @@ import (
 )
 
 type Config struct {
-	//rest.RestConf
+	// rest.RestConf
 	Log logx.LogConf
 
 	// 核心设置
@@ -20,7 +20,7 @@ type Config struct {
 	GoodbyeInfo  string `json:",optional"`      // 下播自动发送的话
 
 	// 关键字回复
-	KeywordReply     bool              `json:",default=false"` //关键词回复开关
+	KeywordReply     bool              `json:",default=false"` // 关键词回复开关
 	KeywordReplyList map[string]string `json:",optional"`      // 关键词回复列表
 
 	// AI聊天相关
@@ -34,6 +34,14 @@ type Config struct {
 		Prompt   string `json:",default=你是一个非常幽默的机器人助理，可以使用emoji表情符号，可以使用颜文字"`
 		Limit    bool   `json:",default=true"`
 		Model    string `json:",default=gpt-3.5-turbo"`
+	}
+	UpNickname string   `json:",default=鸭鸭"` // 主播昵称列表
+	Doubao     struct { // 豆包的配置
+		APIUrl   string `json:",default=https://ark.cn-beijing.volces.com/api/v3"`
+		APIToken string `json:",optional"`
+		Prompt   string `json:",default=请根据用户身份调整回复风格：对主播用管家对待主人的态度表达，对用户用可爱俏皮的风格表达。"`
+		Limit    bool   `json:",default=true"`
+		Model    string `json:",default=doubao-seed-1-6-251015"`
 	}
 
 	// 欢迎配置

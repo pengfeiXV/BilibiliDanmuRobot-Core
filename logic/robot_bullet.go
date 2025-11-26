@@ -2,12 +2,13 @@ package logic
 
 import (
 	"context"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/entity"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/http"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/svc"
-	"github.com/zeromicro/go-zero/core/logx"
 	"regexp"
 	"strings"
+
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/entity"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/http"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/svc"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 var robot *BulletRobot
@@ -16,11 +17,12 @@ type BulletRobot struct {
 	bulletRobotChan chan entity.Bullet
 }
 
-func PushToBulletRobot(content string, reply ...*entity.DanmuMsgTextReplyInfo) {
-	logx.Infof("PushToBulletRobot成功：%s", content)
+func PushToBulletRobot(danmuV2 entity.DanMuV2, reply ...*entity.DanmuMsgTextReplyInfo) {
+	logx.Infof("PushToBulletRobot成功：%s", danmuV2.Content)
 	buttle := entity.Bullet{
-		Msg:   content,
-		Reply: reply,
+		Msg:     danmuV2.Content,
+		DanMuV2: danmuV2,
+		Reply:   reply,
 	}
 	robot.bulletRobotChan <- buttle
 }
@@ -52,6 +54,12 @@ func handleRobotBullet(content entity.Bullet, svcCtx *svc.ServiceContext) {
 			PushToBulletSender("不好意思，机器人坏掉了...", content.Reply...)
 			return
 		}
+	} else if svcCtx.Config.RobotMode == "Doubao" {
+		if reply, err = http.RequestDoubaoRobot(content.DanMuV2, svcCtx); err != nil {
+			logx.Errorf("请求机器人失败：%v", err)
+			PushToBulletSender("不好意思，机器人坏掉了...", content.Reply...)
+			return
+		}
 	} else {
 		if reply, err = http.RequestQingyunkeRobot(content.Msg); err != nil {
 			logx.Errorf("请求机器人失败：%v", err)
@@ -78,10 +86,10 @@ func splitRobotReply(content string, svcCtx *svc.ServiceContext) []string {
 	re, _ := regexp.Compile(`\{face\:.*\}`)
 	content = re.ReplaceAllString(content, "")
 
-	//var res []string
+	// var res []string
 	reply := strings.Split(content, "{br}")
 
-	//for _, r := range reply {
+	// for _, r := range reply {
 	//	// 长度大于20再分割
 	//	zh := []rune(r)
 	//	if len(zh) > 20 {
@@ -97,6 +105,6 @@ func splitRobotReply(content string, svcCtx *svc.ServiceContext) []string {
 	//	} else {
 	//		res = append(res, string(zh))
 	//	}
-	//}
+	// }
 	return reply
 }
