@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/go-resty/resty/v2"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/entity"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/entity"
 	"github.com/zeromicro/go-zero/core/logx"
 	"os"
 	"strings"
@@ -82,14 +82,14 @@ func GetLoginInfo(oauthKey string) (*entity.LoginInfoData, error) {
 			CookieStr += pair[0] + ";"
 		}
 	}
-	//使用追加模式打开文件
+	// 使用追加模式打开文件
 	file, err = os.OpenFile("token/bili_token.txt", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		logx.Errorf("打开文件错误：", err)
 	}
 	file.WriteString(CookieStr)
 	file.Close()
-	//使用追加模式打开文件
+	// 使用追加模式打开文件
 	file, err = os.OpenFile("token/bili_token.json", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		logx.Errorf("打开文件错误：", err)
@@ -100,7 +100,7 @@ func GetLoginInfo(oauthKey string) (*entity.LoginInfoData, error) {
 	return data, err
 }
 func FileExists(path string) bool {
-	_, err := os.Stat(path) //os.Stat获取文件信息
+	_, err := os.Stat(path) // os.Stat获取文件信息
 	if err != nil {
 		if os.IsExist(err) {
 			return true
@@ -128,6 +128,6 @@ func SetHistoryCookie() error {
 
 		return err
 	}
-	//CookieStr = string(cookie)
+	// CookieStr = string(cookie)
 	return err
 }

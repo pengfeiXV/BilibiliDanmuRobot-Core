@@ -4,6 +4,14 @@ type CmdText struct {
 	Cmd string `json:"cmd"`
 }
 
+type DanMuV2 struct {
+	Msg      string `json:"msg"`
+	UserID   string `json:"user_id"`
+	Username string `json:"username"`
+	Content  string `json:"content"`
+	Role     string `json:"role"`
+}
+
 type DanmuMsgText struct {
 	Info []interface{} `json:"info"`
 }
@@ -14,8 +22,9 @@ type DanmuMsgTextReplyInfo struct {
 }
 
 type Bullet struct {
-	Msg   string
-	Reply []*DanmuMsgTextReplyInfo
+	Msg     string
+	DanMuV2 DanMuV2
+	Reply   []*DanmuMsgTextReplyInfo
 }
 
 type DanmuMsgTextInfo0Extra struct {

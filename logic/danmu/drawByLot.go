@@ -1,11 +1,11 @@
 package danmu
 
 import (
-	"github.com/xbclub/BilibiliDanmuRobot-Core/entity"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/logic"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/entity"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/logic"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/svc"
 	"math/rand"
 	"strings"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/svc"
 )
 
 // 抽签过程函数

@@ -3,11 +3,11 @@ package logic
 import (
 	"context"
 	"fmt"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/entity"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/svc"
 	"math"
 	"strconv"
 	"strings"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/entity"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/svc"
 	"sync"
 	"time"
 )
@@ -90,7 +90,7 @@ func ThanksGift(ctx context.Context, svcCtx *svc.ServiceContext) {
 			t.Reset(w)
 
 			if svcCtx.Config.BlindBoxProfitLossStat && g.Data.BlindGift.OriginalGiftName != "" {
-				//fmt.Printf("盲盒: ")
+				// fmt.Printf("盲盒: ")
 				if t, ok := thanksGiver.giftBlindBoxTimer[g.Data.UID]; !ok || t == nil {
 					thanksGiver.giftBlindBoxTimer[g.Data.UID] = time.NewTimer(time.Duration(svcCtx.Config.ThanksGiftTimeout) * time.Second)
 					go func(t *time.Timer) {
@@ -130,7 +130,7 @@ func summarizeBlindGift(danmuLen int, svcCtx *svc.ServiceContext) {
 		giftstring := []string{}
 		msg := ""
 		for blindBoxName, blindBoxMap := range m {
-			//giftstring = append(giftstring, fmt.Sprintf("%d个%s盈亏%+.2f元", blindBoxMap["count"], blindBoxName, float64(blindBoxMap["profit_and_loss"])/1000))
+			// giftstring = append(giftstring, fmt.Sprintf("%d个%s盈亏%+.2f元", blindBoxMap["count"], blindBoxName, float64(blindBoxMap["profit_and_loss"])/1000))
 			if blindBoxMap["profit_and_loss"] > 0 {
 				giftstring = append(giftstring, fmt.Sprintf("%d个%s赚了＋%.2f元", blindBoxMap["count"], blindBoxName, float64(blindBoxMap["profit_and_loss"])/1000))
 			} else {
@@ -237,7 +237,7 @@ func summarizeGift(danmuLen int, minCost int, svcCtx *svc.ServiceContext) {
 			}
 		}
 
-		//fmt.Println("礼物-----", name, giftstring)
+		// fmt.Println("礼物-----", name, giftstring)
 		// 总打赏高于x元，加一句大气
 		if sumCost >= 50000 { // 50元
 			PushToBulletSender(name + "老板大气大气")

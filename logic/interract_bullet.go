@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/xbclub/BilibiliDanmuRobot-Core/entity"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/svc"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/entity"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/svc"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -17,7 +17,7 @@ var interractGiver *InterractGiver
 type InterractGiver struct {
 	interractFilter map[int64]time.Time
 	locked          *sync.Mutex
-	//tableMu         sync.RWMutex
+	// tableMu         sync.RWMutex
 	interractChan chan *InterractData
 }
 type InterractData struct {
@@ -35,7 +35,7 @@ func Interact(ctx context.Context, svcCtx *svc.ServiceContext) {
 	interractGiver = &InterractGiver{
 		interractFilter: map[int64]time.Time{},
 		locked:          new(sync.Mutex),
-		//tableMu:         sync.RWMutex{},
+		// tableMu:         sync.RWMutex{},
 		interractChan: make(chan *InterractData, 1000),
 	}
 
@@ -49,12 +49,12 @@ func Interact(ctx context.Context, svcCtx *svc.ServiceContext) {
 		case <-ctx.Done():
 			goto END
 		case <-t.C:
-			//interractGiver.handlermsg = interractGiver.tmpmsg
-			//interractGiver.tmpmsg = []string{}
-			////if rand.Intn(100) < 30 {
-			//handleInterract()
-			////}
-			//interractGiver.handlermsg = []string{}
+			// interractGiver.handlermsg = interractGiver.tmpmsg
+			// interractGiver.tmpmsg = []string{}
+			// //if rand.Intn(100) < 30 {
+			// handleInterract()
+			// //}
+			// interractGiver.handlermsg = []string{}
 			if len(interractGiver.interractFilter) > 0 {
 				interractGiver.locked.Lock()
 				for k, v := range interractGiver.interractFilter {
@@ -68,7 +68,7 @@ func Interact(ctx context.Context, svcCtx *svc.ServiceContext) {
 
 			t.Reset(w)
 		case g = <-interractGiver.interractChan:
-			//interractGiver.tmpmsg = append(interractGiver.tmpmsg, *g)
+			// interractGiver.tmpmsg = append(interractGiver.tmpmsg, *g)
 			interractGiver.locked.Lock()
 			if value, ok := interractGiver.interractFilter[g.Uid]; ok && value.Add(w).Unix() >= time.Now().Unix() {
 				logx.Debugf("用户 %v 10秒内重复欢迎已被过滤", g.Uid)

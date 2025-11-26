@@ -2,10 +2,11 @@ package danmu
 
 import (
 	"fmt"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/entity"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/logic"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/svc"
 	"strings"
+
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/entity"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/logic"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/svc"
 )
 
 const (
@@ -14,9 +15,9 @@ const (
 	hasPrefix
 )
 
-func DoDanmuProcess(msg string, svcCtx *svc.ServiceContext, reply ...*entity.DanmuMsgTextReplyInfo) {
+func DoDanmuProcess(danmuV2 entity.DanMuV2, svcCtx *svc.ServiceContext, reply ...*entity.DanmuMsgTextReplyInfo) {
 	// @帮助 打出来关键词
-	if strings.Compare("@帮助", msg) == 0 {
+	if strings.Compare("@帮助", danmuV2.Msg) == 0 {
 		s := ""
 		if len(svcCtx.Config.TalkRobotCmd) > 0 {
 			s = fmt.Sprintf("发送带有 %s 的弹幕和我互动", svcCtx.Config.TalkRobotCmd)
@@ -26,7 +27,7 @@ func DoDanmuProcess(msg string, svcCtx *svc.ServiceContext, reply ...*entity.Dan
 			s = "互动聊天已禁用..."
 			logic.PushToBulletSender(s)
 		}
-		//logic.PushToBulletSender(" ")
+		// logic.PushToBulletSender(" ")
 		// logx.Info(s)
 		logic.PushToBulletSender("发送「签到/打卡」即可签到")
 		logic.PushToBulletSender("发送「查询弹幕」查询自己近三天的弹幕数")
@@ -36,23 +37,21 @@ func DoDanmuProcess(msg string, svcCtx *svc.ServiceContext, reply ...*entity.Dan
 		logic.PushToBulletSender("主播发送「开启欢迎弹幕」即可开启欢迎弹幕")
 		logic.PushToBulletSender("本软件为永久免费软件")
 	}
-	if strings.Compare("@我是谁", msg) == 0 {
-		logic.PushToBulletSender("本程序作者为@超凶一只花酱酱")
-	}
 
-	result := checkIsAtMe(&msg, svcCtx)
+	result := checkIsAtMe(&danmuV2.Msg, svcCtx)
 	if result == none {
 		return
 	}
 	content := ""
 	if result == contained {
-		content = strings.ReplaceAll(msg, svcCtx.Config.TalkRobotCmd, "")
+		content = strings.ReplaceAll(danmuV2.Msg, svcCtx.Config.TalkRobotCmd, "")
 	} else if result == hasPrefix {
-		content = strings.TrimPrefix(msg, svcCtx.Config.TalkRobotCmd)
+		content = strings.TrimPrefix(danmuV2.Msg, svcCtx.Config.TalkRobotCmd)
 	}
-	//如果发现弹幕在@我，那么调用机器人进行回复
-	if len(content) > 0 && len(svcCtx.Config.TalkRobotCmd) > 0 && msg != svcCtx.Config.EntryMsg {
-		logic.PushToBulletRobot(content, reply...)
+	danmuV2.Content = content
+	// 如果发现弹幕在@我，那么调用机器人进行回复
+	if len(content) > 0 && len(svcCtx.Config.TalkRobotCmd) > 0 && danmuV2.Msg != svcCtx.Config.EntryMsg {
+		logic.PushToBulletRobot(danmuV2, reply...)
 	}
 }
 

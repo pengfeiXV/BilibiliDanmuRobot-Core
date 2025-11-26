@@ -1,9 +1,9 @@
 package message
 
 import (
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/blivedm-go/pb"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/blivedm-go/utils"
 	"github.com/tidwall/gjson"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/blivedm-go/pb"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/blivedm-go/utils"
 	log "github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/protobuf/proto"
 )
@@ -67,7 +67,7 @@ func (d *Danmaku) Parse(data []byte) {
 
 	ext := new(Extra)
 	emo := new(Emoticon)
-	//扩展字段
+	// 扩展字段
 	err := utils.UnmarshalStr(info.Get("0.15.extra").String(), ext)
 	if err != nil {
 		log.Error("parse danmaku extra failed")
@@ -78,30 +78,30 @@ func (d *Danmaku) Parse(data []byte) {
 	}
 	i2 := info.Get("2")
 	i3 := info.Get("3")
-	d.Content = info.Get("1").String() //弹幕内容
+	d.Content = info.Get("1").String() // 弹幕内容
 
-	d.Sender = &User{ //用户信息
-		Uid:          int(i2.Get("0").Int()), //用户uid
-		Uname:        i2.Get("1").String(),   //用户昵称
-		UserLevel:    i2.Get("16.0").Int(),   //用户等级
-		Admin:        i2.Get("2").Bool(),     //是否为管理者
+	d.Sender = &User{ // 用户信息
+		Uid:          int(i2.Get("0").Int()), // 用户uid
+		Uname:        i2.Get("1").String(),   // 用户昵称
+		UserLevel:    i2.Get("16.0").Int(),   // 用户等级
+		Admin:        i2.Get("2").Bool(),     // 是否为管理者
 		Urank:        int(i2.Get("5").Int()),
-		MobileVerify: i2.Get("6").Bool(),       //是否绑定手机
-		GuardLevel:   int(info.Get("7").Int()), //舰队等级
-		//勋章信息
+		MobileVerify: i2.Get("6").Bool(),       // 是否绑定手机
+		GuardLevel:   int(info.Get("7").Int()), // 舰队等级
+		// 勋章信息
 		Medal: &Medal{
-			Level:    int(i3.Get("0").Int()),  //勋章等级
-			Name:     i3.Get("1").String(),    //勋章名称
-			UpName:   i3.Get("2").String(),    //勋章上主播昵称
-			UpRoomId: int(i3.Get("3").Int()),  //上主播房间id
-			Color:    int(i3.Get("4").Int()),  //勋章颜色
-			UpUid:    int(i3.Get("12").Int()), //上主播uid
+			Level:    int(i3.Get("0").Int()),  // 勋章等级
+			Name:     i3.Get("1").String(),    // 勋章名称
+			UpName:   i3.Get("2").String(),    // 勋章上主播昵称
+			UpRoomId: int(i3.Get("3").Int()),  // 上主播房间id
+			Color:    int(i3.Get("4").Int()),  // 勋章颜色
+			UpUid:    int(i3.Get("12").Int()), // 上主播uid
 		},
 	}
 	d.Extra = ext
 	d.Emoticon = emo
-	d.Type = int(info.Get("0.12").Int()) //弹幕类型
-	d.Timestamp = info.Get("0.4").Int()  //时间戳
+	d.Type = int(info.Get("0.12").Int()) // 弹幕类型
+	d.Timestamp = info.Get("0.4").Int()  // 时间戳
 	d.Raw = sb
 
 	dmv2Content := parsed.Get("dm_v2").String()

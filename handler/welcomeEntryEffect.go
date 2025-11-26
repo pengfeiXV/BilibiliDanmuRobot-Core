@@ -3,9 +3,9 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/entity"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/logic"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/svc"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/entity"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/logic"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/svc"
 	"github.com/zeromicro/go-zero/core/logx"
 	"math/rand"
 	"strconv"
@@ -27,7 +27,7 @@ func (w *wsHandler) welcomeEntryEffect() {
 		}
 
 		if v, ok := w.svc.Config.WelcomeString[fmt.Sprint(entry.Data.Uid)]; w.svc.Config.WelcomeSwitch && ok && w.svc.Config.EntryEffect {
-			//logic.PushToBulletSender(v)
+			// logic.PushToBulletSender(v)
 			logic.PushToInterractChan(&logic.InterractData{
 				Uid: entry.Data.Uid,
 				Msg: v,
