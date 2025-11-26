@@ -2,10 +2,11 @@ package danmu
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/xbclub/BilibiliDanmuRobot-Core/entity"
 	"github.com/xbclub/BilibiliDanmuRobot-Core/logic"
 	"github.com/xbclub/BilibiliDanmuRobot-Core/svc"
-	"strings"
 )
 
 const (
@@ -26,7 +27,7 @@ func DoDanmuProcess(msg string, svcCtx *svc.ServiceContext, reply ...*entity.Dan
 			s = "互动聊天已禁用..."
 			logic.PushToBulletSender(s)
 		}
-		//logic.PushToBulletSender(" ")
+		// logic.PushToBulletSender(" ")
 		// logx.Info(s)
 		logic.PushToBulletSender("发送「签到/打卡」即可签到")
 		logic.PushToBulletSender("发送「查询弹幕」查询自己近三天的弹幕数")
@@ -35,9 +36,6 @@ func DoDanmuProcess(msg string, svcCtx *svc.ServiceContext, reply ...*entity.Dan
 		logic.PushToBulletSender("主播发送「关闭欢迎弹幕」即可关闭欢迎弹幕")
 		logic.PushToBulletSender("主播发送「开启欢迎弹幕」即可开启欢迎弹幕")
 		logic.PushToBulletSender("本软件为永久免费软件")
-	}
-	if strings.Compare("@我是谁", msg) == 0 {
-		logic.PushToBulletSender("本程序作者为@超凶一只花酱酱")
 	}
 
 	result := checkIsAtMe(&msg, svcCtx)
@@ -50,7 +48,7 @@ func DoDanmuProcess(msg string, svcCtx *svc.ServiceContext, reply ...*entity.Dan
 	} else if result == hasPrefix {
 		content = strings.TrimPrefix(msg, svcCtx.Config.TalkRobotCmd)
 	}
-	//如果发现弹幕在@我，那么调用机器人进行回复
+	// 如果发现弹幕在@我，那么调用机器人进行回复
 	if len(content) > 0 && len(svcCtx.Config.TalkRobotCmd) > 0 && msg != svcCtx.Config.EntryMsg {
 		logic.PushToBulletRobot(content, reply...)
 	}
