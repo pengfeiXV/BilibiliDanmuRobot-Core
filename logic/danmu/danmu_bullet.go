@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/entity"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/svc"
-	"github.com/zeromicro/go-zero/core/logx"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/entity"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/svc"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 var danmuHandler *DanmuLogic
@@ -35,6 +36,7 @@ func StartDanmuLogic(ctx context.Context, svcCtx *svc.ServiceContext) {
 		case <-ctx.Done():
 			goto END
 		case msg = <-danmuHandler.danmuChan:
+			logx.Info("danmu msg: ", msg)
 			danmu := &entity.DanmuMsgText{}
 			err = json.Unmarshal([]byte(msg), danmu)
 			if err != nil {

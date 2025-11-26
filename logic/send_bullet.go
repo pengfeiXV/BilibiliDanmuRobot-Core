@@ -2,9 +2,9 @@ package logic
 
 import (
 	"context"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/entity"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/http"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/svc"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/entity"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/http"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/svc"
 	"github.com/zeromicro/go-zero/core/logx"
 	"time"
 )
@@ -59,7 +59,7 @@ func StartSendBullet(ctx context.Context, svcCtx *svc.ServiceContext) {
 				} else {
 					logx.Infof("弹幕发送成功：%s", msgs)
 				}
-				//fmt.Println(msgs)
+				// fmt.Println(msgs)
 				time.Sleep(1 * time.Second) // 防止弹幕发送过快
 			}
 		}

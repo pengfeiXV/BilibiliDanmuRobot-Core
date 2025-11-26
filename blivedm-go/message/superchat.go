@@ -1,8 +1,8 @@
 package message
 
 import (
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/blivedm-go/utils"
 	"github.com/tidwall/gjson"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/blivedm-go/utils"
 	log "github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -10,19 +10,19 @@ import (
 // message_jpn: 消息日文翻译（目前只出现在SUPER_CHAT_MESSAGE_JPN）
 // id_: str，消息ID，删除时用
 type SuperChat struct {
-	BackgroundBottomColor string  `json:"background_bottom_color"` //底部背景色
-	BackgroundColor       string  `json:"background_color"`        //背景色
+	BackgroundBottomColor string  `json:"background_bottom_color"` // 底部背景色
+	BackgroundColor       string  `json:"background_color"`        // 背景色
 	BackgroundColorEnd    string  `json:"background_color_end"`
 	BackgroundColorStart  string  `json:"background_color_start"`
-	BackgroundIcon        string  `json:"background_icon"`        //背景图标
-	BackgroundImage       string  `json:"background_image"`       //背景图
-	BackgroundPriceColor  string  `json:"background_price_color"` //背景价格颜色
+	BackgroundIcon        string  `json:"background_icon"`        // 背景图标
+	BackgroundImage       string  `json:"background_image"`       // 背景图
+	BackgroundPriceColor  string  `json:"background_price_color"` // 背景价格颜色
 	ColorPoint            float64 `json:"color_point"`
 	Dmscore               int     `json:"dmscore"`
-	EndTime               int     `json:"end_time"` //结束时间戳
+	EndTime               int     `json:"end_time"` // 结束时间戳
 	Gift                  struct {
-		GiftId   int    `json:"gift_id"`   //礼物ID
-		GiftName string `json:"gift_name"` //礼物名
+		GiftId   int    `json:"gift_id"`   // 礼物ID
+		GiftName string `json:"gift_name"` // 礼物名
 		Num      int    `json:"num"`
 	} `json:"gift"`
 	Id          int `json:"id"`
@@ -49,13 +49,13 @@ type SuperChat struct {
 	Price            int    `json:"price"` // 价格（人民币）
 	Rate             int    `json:"rate"`
 	StartTime        int    `json:"start_time"` // 开始时间戳
-	Time             int    `json:"time"`       //剩余时间
+	Time             int    `json:"time"`       // 剩余时间
 	Token            string `json:"token"`
 	TransMark        int    `json:"trans_mark"`
 	Ts               int    `json:"ts"`
-	Uid              int    `json:"uid"` //用户ID
+	Uid              int    `json:"uid"` // 用户ID
 	UserInfo         struct {
-		Face       string `json:"face"` //用户头像URL
+		Face       string `json:"face"` // 用户头像URL
 		FaceFrame  string `json:"face_frame"`
 		GuardLevel int    `json:"guard_level"`
 		IsMainVip  int    `json:"is_main_vip"`
@@ -65,8 +65,8 @@ type SuperChat struct {
 		Manager    int    `json:"manager"`
 		NameColor  string `json:"name_color"`
 		Title      string `json:"title"`
-		Uname      string `json:"uname"`      //用户名
-		UserLevel  int    `json:"user_level"` //用户等级
+		Uname      string `json:"uname"`      // 用户名
+		UserLevel  int    `json:"user_level"` // 用户等级
 	} `json:"user_info"`
 }
 

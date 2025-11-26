@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/config"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/handler"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/config"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/handler"
 	"github.com/zeromicro/go-zero/core/logx"
 	"gopkg.in/yaml.v3"
 	"os"
@@ -21,7 +21,7 @@ func main() {
 	}
 	fmt.Println(cls.GetUserinfo())
 
-	//http.HttpTest()
+	// http.HttpTest()
 	x := cls.GetSvc()
 	z := *x.Config
 	z.SignInEnable = false
@@ -34,7 +34,7 @@ func main() {
 	WriteConfig(string(marshal))
 	cls.ReloadConfig()
 	fmt.Println(cls.GetSvc().Config.RoomId)
-	//fmt.Println(cls.GetUserinfo())
+	// fmt.Println(cls.GetUserinfo())
 	time.Sleep(20 * time.Second)
 	z.SignInEnable = true
 	marshal, err = json.Marshal(z)
@@ -43,8 +43,8 @@ func main() {
 	}
 	WriteConfig(string(marshal))
 	cls.ReloadConfig()
-	//time.Sleep(15 * time.Second)
-	//cls.StopWsClient()
+	// time.Sleep(15 * time.Second)
+	// cls.StopWsClient()
 	select {}
 }
 func WriteConfig(data string) *ConfigResponse {
@@ -90,13 +90,13 @@ func WriteConfig(data string) *ConfigResponse {
 	}
 	file.Close()
 
-	//err = Mustload(&c)
-	//if err != nil {
+	// err = Mustload(&c)
+	// if err != nil {
 	//	logx.Error(err)
 	//	resp.Code = false
 	//	resp.Msg = err.Error()
 	//	return resp
-	//}
+	// }
 	resp.Code = true
 	return resp
 }

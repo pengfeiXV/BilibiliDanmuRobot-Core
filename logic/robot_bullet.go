@@ -2,9 +2,9 @@ package logic
 
 import (
 	"context"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/entity"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/http"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/svc"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/entity"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/http"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/svc"
 	"github.com/zeromicro/go-zero/core/logx"
 	"regexp"
 	"strings"
@@ -78,10 +78,10 @@ func splitRobotReply(content string, svcCtx *svc.ServiceContext) []string {
 	re, _ := regexp.Compile(`\{face\:.*\}`)
 	content = re.ReplaceAllString(content, "")
 
-	//var res []string
+	// var res []string
 	reply := strings.Split(content, "{br}")
 
-	//for _, r := range reply {
+	// for _, r := range reply {
 	//	// 长度大于20再分割
 	//	zh := []rune(r)
 	//	if len(zh) > 20 {
@@ -97,6 +97,6 @@ func splitRobotReply(content string, svcCtx *svc.ServiceContext) []string {
 	//	} else {
 	//		res = append(res, string(zh))
 	//	}
-	//}
+	// }
 	return reply
 }

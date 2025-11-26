@@ -1,8 +1,8 @@
 package danmu
 
 import (
-	"github.com/xbclub/BilibiliDanmuRobot-Core/logic"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/svc"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/logic"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/svc"
 	"strconv"
 )
 
