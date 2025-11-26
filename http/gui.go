@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"github.com/avast/retry-go/v4"
 	"github.com/go-resty/resty/v2"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/entity"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/entity"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/rest/httpc"
 	"io"
@@ -72,9 +72,9 @@ func GetUserInfo() (userinfo *entity.UserinfoLite) {
 	}
 	if r.Code == -412 {
 		logx.Info("request was banned")
-		//return userinfo
+		// return userinfo
 	}
-	//logx.Error(r)
+	// logx.Error(r)
 	if resps, err = cli.R().
 		SetHeader("user-agent", userAgent).
 		SetHeader("cookie", CookieStr).

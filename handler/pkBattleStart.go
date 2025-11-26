@@ -2,9 +2,9 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/entity"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/logic"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/svc"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/entity"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/logic"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/svc"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -32,7 +32,7 @@ func pkbattlestartfunc(svcCtx *svc.ServiceContext, s string) {
 			roomid = info.Data.InitInfo.RoomId
 		}
 		logx.Debug("开始pk")
-		//go handlerPK(svcCtx, body)
+		// go handlerPK(svcCtx, body)
 		if roomid == 0 {
 			logx.Error("未获取的pk对手信息")
 		} else {

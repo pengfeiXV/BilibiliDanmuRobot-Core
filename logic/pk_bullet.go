@@ -3,9 +3,9 @@ package logic
 import (
 	"context"
 	"fmt"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/entity"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/http"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/svc"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/entity"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/http"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/svc"
 	"github.com/zeromicro/go-zero/core/logx"
 	"sync"
 	"time"
@@ -55,7 +55,7 @@ func PK(ctx context.Context, svcCtx *svc.ServiceContext) {
 
 			t.Reset(w)
 		case g = <-pkGiver.pkChan:
-			//pkGiver.tmpmsg = append(pkGiver.tmpmsg, *g)
+			// pkGiver.tmpmsg = append(pkGiver.tmpmsg, *g)
 			pkGiver.locked.Lock()
 			if value, ok := pkGiver.pkFilter[*g]; ok && value.Add(w).Unix() >= time.Now().Unix() {
 				logx.Debugf("pk room %v 10秒内重复获取数据已被过滤", *g)
@@ -157,7 +157,7 @@ func handlerPK(roomid int, svcCtx *svc.ServiceContext) {
 	}
 
 	// logx.Info("TTTTT ", otherSideUid)
-	//PushToBulletSender(fmt.Sprintf("当前对手:%v，%v船，%v粉,对面有%v名船长在线，高能榜%v人，榜前50贡献%v分", userinfo.Data.Info.Uname, listInfo.Data.Info.Num, userinfo.Data.FollowerNum, toplistalive, rankListInfo.Data.OnlineNum, rankcount))
+	// PushToBulletSender(fmt.Sprintf("当前对手:%v，%v船，%v粉,对面有%v名船长在线，高能榜%v人，榜前50贡献%v分", userinfo.Data.Info.Uname, listInfo.Data.Info.Num, userinfo.Data.FollowerNum, toplistalive, rankListInfo.Data.OnlineNum, rankcount))
 	PushToBulletSender(fmt.Sprintf("当前对手:%v", userinfo.Data.Info.Uname))
 	PushToBulletSender(fmt.Sprintf("共%v船，%v粉", listInfo.Data.Info.Num, userinfo.Data.FollowerNum))
 	PushToBulletSender(fmt.Sprintf("当前%v船在线，高能榜%v人", toplistalive, rankListInfo.Data.OnlineNum))

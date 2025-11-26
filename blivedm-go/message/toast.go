@@ -1,8 +1,8 @@
 package message
 
 import (
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/blivedm-go/utils"
 	"github.com/tidwall/gjson"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/blivedm-go/utils"
 	log "github.com/zeromicro/go-zero/core/logx"
 )
 

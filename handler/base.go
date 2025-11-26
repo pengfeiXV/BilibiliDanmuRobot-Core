@@ -5,16 +5,16 @@ import (
 	"errors"
 	"fmt"
 	_ "github.com/glebarez/go-sqlite"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/blivedm-go/client"
+	_ "github.com/pengfeiXV/BilibiliDanmuRobot-Core/blivedm-go/utils"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/config"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/entity"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/http"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/logic"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/logic/danmu"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/svc"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/utiles"
 	"github.com/robfig/cron/v3"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/blivedm-go/client"
-	_ "github.com/xbclub/BilibiliDanmuRobot-Core/blivedm-go/utils"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/config"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/entity"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/http"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/logic"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/logic/danmu"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/svc"
-	"github.com/xbclub/BilibiliDanmuRobot-Core/utiles"
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/logx"
 	"math/rand"
@@ -36,16 +36,16 @@ type wsHandler struct {
 	// 特效欢迎
 	ineterractCtx    context.Context
 	ineterractCancel context.CancelFunc
-	//礼物感谢
+	// 礼物感谢
 	thanksGiftCtx   context.Context
 	thankGiftCancel context.CancelFunc
-	//pk提醒
+	// pk提醒
 	pkCtx    context.Context
 	pkCancel context.CancelFunc
-	//弹幕处理
+	// 弹幕处理
 	danmuLogicCtx    context.Context
 	danmuLogicCancel context.CancelFunc
-	//定时弹幕
+	// 定时弹幕
 	corndanmu           *cron.Cron
 	mapCronDanmuSendIdx map[int]int
 	userId              int
@@ -67,7 +67,7 @@ func NewWsHandler() WsHandler {
 	ws.client = client.NewClient(ctx.Config.RoomId)
 	ws.client.SetCookie(http.CookieStr)
 	ws.svc = ctx
-	//初始化定时弹幕
+	// 初始化定时弹幕
 	ws.corndanmu = cron.New(cron.WithParser(cron.NewParser(
 		cron.SecondOptional | cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow,
 	)))
@@ -84,7 +84,7 @@ func NewWsHandler() WsHandler {
 	roominfo, err := http.RoomInit(ctx.Config.RoomId)
 	if err != nil {
 		logx.Error(err)
-		//return nil
+		// return nil
 	}
 	ctx.UserID = roominfo.Data.Uid
 	return ws
@@ -104,7 +104,7 @@ func (ws *wsHandler) ReloadConfig() error {
 		roominfo, err := http.RoomInit(ctx.Config.RoomId)
 		if err != nil {
 			logx.Error(err)
-			//return err
+			// return err
 		}
 		ctx.UserID = roominfo.Data.Uid
 		err = ws.client.Start()
@@ -160,7 +160,7 @@ func (w *wsHandler) GetSvc() svc.ServiceContext {
 func (w *wsHandler) StopWsClient() {
 	w.corndanmu.Stop()
 	w.client.Stop()
-	//w.svc.Db.Db.Close()
+	// w.svc.Db.Db.Close()
 }
 func (w *wsHandler) StopChanel() {
 	if w.sendBulletCancel != nil {
@@ -244,10 +244,10 @@ func (w *wsHandler) startLogic() {
 	// 下播提醒
 	// w.sayGoodbyeByWs()
 
-	//定时弹幕
+	// 定时弹幕
 	w.corndanmuStart()
 
-	//w.registerHandler()
+	// w.registerHandler()
 }
 func (w *wsHandler) registerHandler() {
 	w.welcomeEntryEffect()
@@ -277,11 +277,11 @@ func (w *wsHandler) starthttp() error {
 		}
 		logx.Info("用户登录成功")
 	} else {
-		//if err = w.userlogin(); err != nil {
+		// if err = w.userlogin(); err != nil {
 		//	logx.Errorf("用户登录失败：%v", err)
 		//	return
-		//}
-		//logx.Info("用户登录成功")
+		// }
+		// logx.Info("用户登录成功")
 		logx.Error("用户登录失败")
 		return errors.New("用户登录失败")
 	}
@@ -351,7 +351,7 @@ func mustloadConfig() (*svc.ServiceContext, error) {
 	conf.MustLoad("etc/bilidanmaku-api.yaml", &c, conf.UseEnv())
 	logx.MustSetup(c.Log)
 	logx.DisableStat()
-	//配置数据库文件夹
+	// 配置数据库文件夹
 	info, err := os.Stat(c.DBPath)
 	if os.IsNotExist(err) || !info.IsDir() {
 		err = os.MkdirAll(c.DBPath, 0777)
