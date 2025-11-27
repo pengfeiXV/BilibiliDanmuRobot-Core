@@ -3,13 +3,14 @@ package logic
 import (
 	"context"
 	"fmt"
-	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/entity"
-	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/svc"
 	"math"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/entity"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/svc"
 )
 
 // 检测到礼物，push [uname]->[giftName]->[cost]，number+1
@@ -127,14 +128,14 @@ END:
 func summarizeBlindGift(danmuLen int, svcCtx *svc.ServiceContext) {
 	// 盲盒礼物
 	for name, m := range thanksGiver.giftBlindBoxTable {
-		giftstring := []string{}
+		var giftstring []string
 		msg := ""
 		for blindBoxName, blindBoxMap := range m {
 			// giftstring = append(giftstring, fmt.Sprintf("%d个%s盈亏%+.2f元", blindBoxMap["count"], blindBoxName, float64(blindBoxMap["profit_and_loss"])/1000))
 			if blindBoxMap["profit_and_loss"] > 0 {
-				giftstring = append(giftstring, fmt.Sprintf("%d个%s赚了＋%.2f元", blindBoxMap["count"], blindBoxName, float64(blindBoxMap["profit_and_loss"])/1000))
+				giftstring = append(giftstring, fmt.Sprintf("%d个%s赚了%.2f元", blindBoxMap["count"], blindBoxName, float64(blindBoxMap["profit_and_loss"])/1000))
 			} else {
-				giftstring = append(giftstring, fmt.Sprintf("%d个%s亏了－%.2f元", blindBoxMap["count"], blindBoxName, math.Abs(float64(blindBoxMap["profit_and_loss"])/1000)))
+				giftstring = append(giftstring, fmt.Sprintf("%d个%s亏了%.2f元", blindBoxMap["count"], blindBoxName, math.Abs(float64(blindBoxMap["profit_and_loss"])/1000)))
 			}
 			// 计算打赏金额
 			// 感谢完后立刻清空map

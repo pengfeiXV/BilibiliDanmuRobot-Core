@@ -4,8 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math/rand"
+	"os"
+	"reflect"
+	"strconv"
+	"time"
+
 	_ "github.com/glebarez/go-sqlite"
 	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/blivedm-go/client"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/blivedm-go/message"
 	_ "github.com/pengfeiXV/BilibiliDanmuRobot-Core/blivedm-go/utils"
 	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/config"
 	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/entity"
@@ -17,11 +24,6 @@ import (
 	"github.com/robfig/cron/v3"
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/logx"
-	"math/rand"
-	"os"
-	"reflect"
-	"strconv"
-	"time"
 )
 
 type wsHandler struct {
@@ -34,8 +36,8 @@ type wsHandler struct {
 	sendBulletCtx    context.Context
 	sendBulletCancel context.CancelFunc
 	// 特效欢迎
-	ineterractCtx    context.Context
-	ineterractCancel context.CancelFunc
+	interactCtx    context.Context
+	interactCancel context.CancelFunc
 	// 礼物感谢
 	thanksGiftCtx   context.Context
 	thankGiftCancel context.CancelFunc
@@ -46,7 +48,7 @@ type wsHandler struct {
 	danmuLogicCtx    context.Context
 	danmuLogicCancel context.CancelFunc
 	// 定时弹幕
-	corndanmu           *cron.Cron
+	cronDanmu           *cron.Cron
 	mapCronDanmuSendIdx map[int]int
 	userId              int
 	initStart           bool
@@ -68,7 +70,7 @@ func NewWsHandler() WsHandler {
 	ws.client.SetCookie(http.CookieStr)
 	ws.svc = ctx
 	// 初始化定时弹幕
-	ws.corndanmu = cron.New(cron.WithParser(cron.NewParser(
+	ws.cronDanmu = cron.New(cron.WithParser(cron.NewParser(
 		cron.SecondOptional | cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow,
 	)))
 	ws.mapCronDanmuSendIdx = make(map[int]int)
@@ -84,8 +86,9 @@ func NewWsHandler() WsHandler {
 	roominfo, err := http.RoomInit(ctx.Config.RoomId)
 	if err != nil {
 		logx.Error(err)
-		// return nil
+		return nil
 	}
+	ws.svc.LiveStatus = roominfo.Data.LiveStatus
 	ctx.UserID = roominfo.Data.Uid
 	return ws
 }
@@ -115,8 +118,8 @@ func (ws *wsHandler) ReloadConfig() error {
 	}
 	if ctx.Config.CronDanmu != oldconfig.CronDanmu || !areSlicesEqual(ctx.Config.CronDanmuList, oldconfig.CronDanmuList) {
 		logx.Info("识别到定时弹幕配置发生变化，重新加载")
-		for _, i := range ws.corndanmu.Entries() {
-			ws.corndanmu.Remove(i.ID)
+		for _, i := range ws.cronDanmu.Entries() {
+			ws.cronDanmu.Remove(i.ID)
 		}
 		ws.corndanmuStart()
 	}
@@ -135,62 +138,70 @@ type WsHandler interface {
 	GetUserinfo() *entity.UserinfoLite
 }
 
-func (w *wsHandler) InitStartWsClient() {
-	w.startLogic()
+func (ws *wsHandler) InitStartWsClient() {
+	ws.startLogic()
 }
-func (w *wsHandler) StartWsClient() error {
-	if w.svc.Config.EntryMsg != "off" {
-		err := http.Send(w.svc.Config.EntryMsg, w.svc)
+func (ws *wsHandler) StartWsClient() error {
+	if ws.svc.Config.EntryMsg != "off" {
+		err := http.Send(ws.svc.Config.EntryMsg, ws.svc)
 		if err != nil {
 			logx.Error(err)
 		}
 	}
-	w.corndanmu.Start()
-	w.client = client.NewClient(w.svc.Config.RoomId)
-	w.client.SetCookie(http.CookieStr)
-	w.registerHandler()
-	return w.client.Start()
+	ws.cronDanmu.Start()
+	ws.client = client.NewClient(ws.svc.Config.RoomId)
+	ws.client.SetCookie(http.CookieStr)
+	ws.registerHandler()
+
+	ws.client.OnLiveStart(func(start *message.LiveStart) {
+		ws.svc.LiveStatus = entity.Live
+	})
+	ws.client.OnLiveStop(func(end *message.LiveStop) {
+		ws.svc.LiveStatus = entity.NotStarted
+	})
+
+	return ws.client.Start()
 }
-func (w *wsHandler) GetUserinfo() *entity.UserinfoLite {
+func (ws *wsHandler) GetUserinfo() *entity.UserinfoLite {
 	return http.GetUserInfo()
 }
-func (w *wsHandler) GetSvc() svc.ServiceContext {
-	return *w.svc
+func (ws *wsHandler) GetSvc() svc.ServiceContext {
+	return *ws.svc
 }
-func (w *wsHandler) StopWsClient() {
-	w.corndanmu.Stop()
-	w.client.Stop()
-	// w.svc.Db.Db.Close()
+func (ws *wsHandler) StopWsClient() {
+	ws.cronDanmu.Stop()
+	ws.client.Stop()
+	// ws.svc.Db.Db.Close()
 }
-func (w *wsHandler) StopChanel() {
-	if w.sendBulletCancel != nil {
-		w.sendBulletCancel()
+func (ws *wsHandler) StopChanel() {
+	if ws.sendBulletCancel != nil {
+		ws.sendBulletCancel()
 	}
-	if w.robotBulletCancel != nil {
-		w.robotBulletCancel()
+	if ws.robotBulletCancel != nil {
+		ws.robotBulletCancel()
 	}
-	if w.thankGiftCancel != nil {
-		w.thankGiftCancel()
+	if ws.thankGiftCancel != nil {
+		ws.thankGiftCancel()
 	}
-	if w.ineterractCancel != nil {
-		w.ineterractCancel() // 关闭弹幕姬goroutine
+	if ws.interactCancel != nil {
+		ws.interactCancel() // 关闭弹幕姬goroutine
 	}
-	if w.pkCancel != nil {
-		w.pkCancel()
+	if ws.pkCancel != nil {
+		ws.pkCancel()
 	}
-	if w.danmuLogicCancel != nil {
-		w.danmuLogicCancel()
+	if ws.danmuLogicCancel != nil {
+		ws.danmuLogicCancel()
 	}
-	for _, i := range w.corndanmu.Entries() {
-		w.corndanmu.Remove(i.ID)
+	for _, i := range ws.cronDanmu.Entries() {
+		ws.cronDanmu.Remove(i.ID)
 	}
 }
-func (w *wsHandler) SayGoodbye() {
-	if len(w.svc.Config.GoodbyeInfo) > 0 {
+func (ws *wsHandler) SayGoodbye() {
+	if len(ws.svc.Config.GoodbyeInfo) > 0 {
 
-		var danmuLen = w.svc.Config.DanmuLen
+		var danmuLen = ws.svc.Config.DanmuLen
 		var msgdata []string
-		msgrun := []rune(w.svc.Config.GoodbyeInfo)
+		msgrun := []rune(ws.svc.Config.GoodbyeInfo)
 		msgLen := len(msgrun)
 		msgcount := msgLen / danmuLen
 		tmpmsgcount := msgLen % danmuLen
@@ -205,7 +216,7 @@ func (w *wsHandler) SayGoodbye() {
 			msgdata = append(msgdata, string(msgrun[(m-1)*danmuLen:danmuLen*m]))
 		}
 		for _, msgs := range msgdata {
-			err := http.Send(msgs, w.svc)
+			err := http.Send(msgs, ws.svc)
 			if err != nil {
 				logx.Errorf("下播弹幕发送失败：%s msg: %s", err, msgs)
 			}
@@ -214,58 +225,58 @@ func (w *wsHandler) SayGoodbye() {
 		}
 	}
 }
-func (w *wsHandler) startLogic() {
-	w.sendBulletCtx, w.sendBulletCancel = context.WithCancel(context.Background())
-	go logic.StartSendBullet(w.sendBulletCtx, w.svc)
+func (ws *wsHandler) startLogic() {
+	ws.sendBulletCtx, ws.sendBulletCancel = context.WithCancel(context.Background())
+	go logic.StartSendBullet(ws.sendBulletCtx, ws.svc)
 	logx.Info("弹幕推送已开启...")
 	// 机器人
-	w.robotBulletCtx, w.robotBulletCancel = context.WithCancel(context.Background())
-	go logic.StartBulletRobot(w.robotBulletCtx, w.svc)
+	ws.robotBulletCtx, ws.robotBulletCancel = context.WithCancel(context.Background())
+	go logic.StartBulletRobot(ws.robotBulletCtx, ws.svc)
 	// 弹幕逻辑
-	w.danmuLogicCtx, w.danmuLogicCancel = context.WithCancel(context.Background())
-	go danmu.StartDanmuLogic(w.danmuLogicCtx, w.svc)
+	ws.danmuLogicCtx, ws.danmuLogicCancel = context.WithCancel(context.Background())
+	go danmu.StartDanmuLogic(ws.danmuLogicCtx, ws.svc)
 
 	logx.Info("弹幕机器人已开启")
 	// 特效欢迎
-	w.ineterractCtx, w.ineterractCancel = context.WithCancel(context.Background())
-	go logic.Interact(w.ineterractCtx, w.svc)
+	ws.interactCtx, ws.interactCancel = context.WithCancel(context.Background())
+	go logic.Interact(ws.interactCtx, ws.svc)
 
 	logx.Info("欢迎模块已开启")
 
 	// 礼物感谢
-	w.thanksGiftCtx, w.thankGiftCancel = context.WithCancel(context.Background())
-	go logic.ThanksGift(w.thanksGiftCtx, w.svc)
+	ws.thanksGiftCtx, ws.thankGiftCancel = context.WithCancel(context.Background())
+	go logic.ThanksGift(ws.thanksGiftCtx, ws.svc)
 
 	logx.Info("礼物感谢已开启")
 	// pk提醒
-	w.pkCtx, w.pkCancel = context.WithCancel(context.Background())
-	go logic.PK(w.pkCtx, w.svc)
+	ws.pkCtx, ws.pkCancel = context.WithCancel(context.Background())
+	go logic.PK(ws.pkCtx, ws.svc)
 
 	// 下播提醒
-	// w.sayGoodbyeByWs()
+	// ws.sayGoodbyeByWs()
 
 	// 定时弹幕
-	w.corndanmuStart()
+	ws.corndanmuStart()
 
-	// w.registerHandler()
+	// ws.registerHandler()
 }
-func (w *wsHandler) registerHandler() {
-	w.welcomeEntryEffect()
-	w.welcomeInteractWord()
+func (ws *wsHandler) registerHandler() {
+	ws.welcomeEntryEffect()
+	ws.welcomeInteractWord()
 	logx.Info("弹幕处理已开启")
-	w.receiveDanmu()
+	ws.receiveDanmu()
 	// 天选自动关闭欢迎
-	w.anchorLot()
+	ws.anchorLot()
 	logx.Info("pk提醒已开启")
-	w.pkBattleStart()
-	w.pkBattleEnd()
+	ws.pkBattleStart()
+	ws.pkBattleEnd()
 	// 禁言用户提醒
-	w.blockUser()
-	w.thankGifts()
+	ws.blockUser()
+	ws.thankGifts()
 	// 红包
-	w.redPocket()
+	ws.redPocket()
 }
-func (w *wsHandler) starthttp() error {
+func (ws *wsHandler) starthttp() error {
 	var err error
 	http.InitHttpClient()
 	// 判断是否存在历史cookie
@@ -277,7 +288,7 @@ func (w *wsHandler) starthttp() error {
 		}
 		logx.Info("用户登录成功")
 	} else {
-		// if err = w.userlogin(); err != nil {
+		// if err = ws.userlogin(); err != nil {
 		//	logx.Errorf("用户登录失败：%v", err)
 		//	return
 		// }
@@ -287,7 +298,7 @@ func (w *wsHandler) starthttp() error {
 	}
 	return nil
 }
-func (w *wsHandler) userlogin() error {
+func (ws *wsHandler) userlogin() error {
 	var err error
 	http.InitHttpClient()
 	var loginUrl *entity.LoginUrl
@@ -308,25 +319,34 @@ func (w *wsHandler) userlogin() error {
 
 	return err
 }
-func (w *wsHandler) corndanmuStart() {
-	if w.svc.Config.CronDanmu == false {
+func (ws *wsHandler) corndanmuStart() {
+	if ws.svc.Config.CronDanmu == false {
 		return
 	}
-	for n, danmux := range w.svc.Config.CronDanmuList {
+	for n, danmux := range ws.svc.Config.CronDanmuList {
 		if danmux.Danmu != nil {
 			i := n
 			danmus := danmux
-			_, err := w.corndanmu.AddFunc(danmus.Cron, func() {
+			_, err := ws.cronDanmu.AddFunc(danmus.Cron, func() {
+				roomInfo, err := http.RoomInit(int(ws.svc.UserID))
+				if err != nil {
+					logx.Error(err)
+					return
+				}
+				ws.svc.LiveStatus = roomInfo.Data.LiveStatus
+				if ws.svc.LiveStatus != entity.Live {
+					return
+				}
 				if len(danmus.Danmu) > 0 {
 					if danmus.Random {
 						logic.PushToBulletSender(danmus.Danmu[rand.Intn(len(danmus.Danmu))])
 					} else {
-						_, ok := w.mapCronDanmuSendIdx[i]
+						_, ok := ws.mapCronDanmuSendIdx[i]
 						if !ok {
-							w.mapCronDanmuSendIdx[i] = 0
+							ws.mapCronDanmuSendIdx[i] = 0
 						}
-						w.mapCronDanmuSendIdx[i] = w.mapCronDanmuSendIdx[i] + 1
-						logic.PushToBulletSender(danmus.Danmu[w.mapCronDanmuSendIdx[i]%len(danmus.Danmu)])
+						ws.mapCronDanmuSendIdx[i] = ws.mapCronDanmuSendIdx[i] + 1
+						logic.PushToBulletSender(danmus.Danmu[ws.mapCronDanmuSendIdx[i]%len(danmus.Danmu)])
 					}
 				}
 			})
@@ -335,7 +355,7 @@ func (w *wsHandler) corndanmuStart() {
 			}
 		}
 	}
-	w.corndanmu.Start()
+	ws.cronDanmu.Start()
 }
 func mustloadConfig() (*svc.ServiceContext, error) {
 	dir := "./token"

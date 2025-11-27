@@ -15,16 +15,16 @@ var _redPocketCnt = 0
 var locked *sync.Mutex = new(sync.Mutex)
 
 // 礼物感谢
-func (w *wsHandler) redPocket() {
-	w.client.RegisterCustomEventHandler("POPULARITY_RED_POCKET_NEW", func(s string) {
+func (ws *wsHandler) redPocket() {
+	ws.client.RegisterCustomEventHandler("POPULARITY_RED_POCKET_NEW", func(s string) {
 		// logx.Info(s)
 		send := &entity.RedPocketNew{}
 		_ = json.Unmarshal([]byte(s), send)
 		locked.Lock()
 		_redPocketCnt++
 		locked.Unlock()
-		if w.svc.Config.ThanksGift {
-			if w.svc.Config.ThanksGiftUseAt {
+		if ws.svc.Config.ThanksGift {
+			if ws.svc.Config.ThanksGiftUseAt {
 				logic.PushToBulletSender(fmt.Sprintf("感谢 %d 电池的 %s", send.Data.Price, send.Data.GiftName), &entity.DanmuMsgTextReplyInfo{
 					ReplyUid: strconv.Itoa(send.Data.Uid),
 				})
@@ -32,16 +32,16 @@ func (w *wsHandler) redPocket() {
 				logic.PushToBulletSender(fmt.Sprintf("感谢 %s %d电池的 %s", send.Data.Uname, send.Data.Price, send.Data.GiftName))
 			}
 		}
-		if w.svc.Config.InteractWord || w.svc.Config.EntryEffect || w.svc.Config.WelcomeHighWealthy {
-			w.svc.Config.InteractWord = false
-			w.svc.Config.EntryEffect = false
-			w.svc.Config.WelcomeHighWealthy = false
-			w.svc.Config.LotteryEnable = false
+		if ws.svc.Config.InteractWord || ws.svc.Config.EntryEffect || ws.svc.Config.WelcomeHighWealthy {
+			ws.svc.Config.InteractWord = false
+			ws.svc.Config.EntryEffect = false
+			ws.svc.Config.WelcomeHighWealthy = false
+			ws.svc.Config.LotteryEnable = false
 			logic.PushToBulletSender("识别到红包，欢迎弹幕已临时关闭")
 		}
 	})
 
-	w.client.RegisterCustomEventHandler("POPULARITY_RED_POCKET_WINNER_LIST", func(s string) {
+	ws.client.RegisterCustomEventHandler("POPULARITY_RED_POCKET_WINNER_LIST", func(s string) {
 		locked.Lock()
 		_redPocketCnt--
 		if _redPocketCnt < 0 {
@@ -58,14 +58,14 @@ func (w *wsHandler) redPocket() {
 		}
 
 		if _redPocketCnt <= 0 {
-			if w.svc.Config.InteractWord != w.svc.Autointerract.InteractWord {
-				w.svc.Config.InteractWord = w.svc.Autointerract.InteractWord
+			if ws.svc.Config.InteractWord != ws.svc.AutoInteract.InteractWord {
+				ws.svc.Config.InteractWord = ws.svc.AutoInteract.InteractWord
 			}
-			if w.svc.Config.EntryEffect != w.svc.Autointerract.EntryEffect {
-				w.svc.Config.EntryEffect = w.svc.Autointerract.EntryEffect
+			if ws.svc.Config.EntryEffect != ws.svc.AutoInteract.EntryEffect {
+				ws.svc.Config.EntryEffect = ws.svc.AutoInteract.EntryEffect
 			}
-			if w.svc.Config.WelcomeHighWealthy != w.svc.Autointerract.WelcomeHighWealthy {
-				w.svc.Config.WelcomeHighWealthy = w.svc.Autointerract.WelcomeHighWealthy
+			if ws.svc.Config.WelcomeHighWealthy != ws.svc.AutoInteract.WelcomeHighWealthy {
+				ws.svc.Config.WelcomeHighWealthy = ws.svc.AutoInteract.WelcomeHighWealthy
 			}
 			logic.PushToBulletSender("红包结束，欢迎弹幕已恢复默认")
 			_redPocketCnt = 0

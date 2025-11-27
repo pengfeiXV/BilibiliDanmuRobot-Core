@@ -16,37 +16,37 @@ import (
 
 var random = rand.New(rand.NewSource(time.Now().UnixMilli()))
 
-func (w *wsHandler) welcomeInteractWord() {
-	w.client.RegisterCustomEventHandler("INTERACT_WORD", func(s string) {
+func (ws *wsHandler) welcomeInteractWord() {
+	ws.client.RegisterCustomEventHandler("INTERACT_WORD", func(s string) {
 		interact := &entity.InteractWordText{}
 		_ = json.Unmarshal([]byte(s), interact)
 		// 1 进场 2 关注 3 分享 5(互关)
 		if interact.Data.MsgType == 1 {
-			if !w.svc.Config.InteractSelf && strconv.Itoa(int(interact.Data.Uid)) == w.svc.RobotID {
+			if !ws.svc.Config.InteractSelf && strconv.Itoa(int(interact.Data.Uid)) == ws.svc.RobotID {
 				return
 			}
-			if !w.svc.Config.InteractAnchor && interact.Data.Uid == w.svc.UserID {
+			if !ws.svc.Config.InteractAnchor && interact.Data.Uid == ws.svc.UserID {
 				return
 			}
 
-			if v, ok := w.svc.Config.WelcomeString[fmt.Sprint(interact.Data.Uid)]; w.svc.Config.WelcomeSwitch && ok {
+			if v, ok := ws.svc.Config.WelcomeString[fmt.Sprint(interact.Data.Uid)]; ws.svc.Config.WelcomeSwitch && ok {
 				logic.PushToInterractChan(&logic.InterractData{
 					Uid: interact.Data.Uid,
 					Msg: v,
 				})
-			} else if w.svc.Config.InteractWord {
+			} else if ws.svc.Config.InteractWord {
 				// 不在黑名单才欢迎
-				if !inWide(interact.Data.Uname, w.svc.Config.WelcomeBlacklistWide) &&
-					!in(interact.Data.Uname, w.svc.Config.WelcomeBlacklist) {
-					if w.svc.Config.InteractWordByTime {
-						msg := handleInterractByTime(interact.Data.Uid, welcomeInteract(interact.Data.Uname), w.svc)
+				if !inWide(interact.Data.Uname, ws.svc.Config.WelcomeBlacklistWide) &&
+					!in(interact.Data.Uname, ws.svc.Config.WelcomeBlacklist) {
+					if ws.svc.Config.InteractWordByTime {
+						msg := handleInterractByTime(interact.Data.Uid, welcomeInteract(interact.Data.Uname), ws.svc)
 						logx.Debug(msg)
 						logic.PushToInterractChan(&logic.InterractData{
 							Uid: interact.Data.Uid,
 							Msg: msg,
 						})
 					} else {
-						msg := handleInterract(interact.Data.Uid, welcomeInteract(interact.Data.Uname), w.svc)
+						msg := handleInterract(interact.Data.Uid, welcomeInteract(interact.Data.Uname), ws.svc)
 						ms := strings.Split(msg, "\n")
 						if len(ms) > 1 {
 							for i, s := range ms {
@@ -65,40 +65,40 @@ func (w *wsHandler) welcomeInteractWord() {
 				}
 			}
 		} else if interact.Data.MsgType == 2 || interact.Data.MsgType == 5 {
-			if w.svc.Config.ThanksFocus {
+			if ws.svc.Config.ThanksFocus {
 				if len(interact.Data.Uname) == 0 {
 					return
 				}
 				msg := ""
-				if w.svc.Config.WelcomeUseAt {
-					msg = "感谢关注!" + w.svc.Config.FocusDanmu[random.Intn(len(w.svc.Config.FocusDanmu))]
+				if ws.svc.Config.WelcomeUseAt {
+					msg = "感谢关注!" + ws.svc.Config.FocusDanmu[random.Intn(len(ws.svc.Config.FocusDanmu))]
 					logic.PushToBulletSender(msg, &entity.DanmuMsgTextReplyInfo{
 						ReplyUid: strconv.FormatInt(interact.Data.Uid, 10),
 					})
 				} else {
-					msg := "感谢 " + shortName(interact.Data.Uname, 8, w.svc.Config.DanmuLen) + " 的关注!"
+					msg := "感谢 " + shortName(interact.Data.Uname, 8, ws.svc.Config.DanmuLen) + " 的关注!"
 					logic.PushToBulletSender(msg)
-					if w.svc.Config.FocusDanmu != nil && len(w.svc.Config.FocusDanmu) > 0 {
-						logic.PushToBulletSender(w.svc.Config.FocusDanmu[random.Intn(len(w.svc.Config.FocusDanmu))])
+					if ws.svc.Config.FocusDanmu != nil && len(ws.svc.Config.FocusDanmu) > 0 {
+						logic.PushToBulletSender(ws.svc.Config.FocusDanmu[random.Intn(len(ws.svc.Config.FocusDanmu))])
 					}
 				}
 			}
 		} else if interact.Data.MsgType == 3 {
-			if w.svc.Config.ThanksShare {
+			if ws.svc.Config.ThanksShare {
 				if len(interact.Data.Uname) == 0 {
 					return
 				}
 				msg := ""
-				if w.svc.Config.WelcomeUseAt {
-					msg = "感谢分享!" + w.svc.Config.FocusDanmu[random.Intn(len(w.svc.Config.FocusDanmu))]
+				if ws.svc.Config.WelcomeUseAt {
+					msg = "感谢分享!" + ws.svc.Config.FocusDanmu[random.Intn(len(ws.svc.Config.FocusDanmu))]
 					logic.PushToBulletSender(msg, &entity.DanmuMsgTextReplyInfo{
 						ReplyUid: strconv.FormatInt(interact.Data.Uid, 10),
 					})
 				} else {
-					msg = "感谢 " + shortName(interact.Data.Uname, 8, w.svc.Config.DanmuLen) + " 的分享!"
+					msg = "感谢 " + shortName(interact.Data.Uname, 8, ws.svc.Config.DanmuLen) + " 的分享!"
 					logic.PushToBulletSender(msg)
-					if w.svc.Config.FocusDanmu != nil && len(w.svc.Config.FocusDanmu) > 0 {
-						logic.PushToBulletSender(w.svc.Config.FocusDanmu[random.Intn(len(w.svc.Config.FocusDanmu))])
+					if ws.svc.Config.FocusDanmu != nil && len(ws.svc.Config.FocusDanmu) > 0 {
+						logic.PushToBulletSender(ws.svc.Config.FocusDanmu[random.Intn(len(ws.svc.Config.FocusDanmu))])
 					}
 				}
 			}
