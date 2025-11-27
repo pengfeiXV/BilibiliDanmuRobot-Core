@@ -8,12 +8,12 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-func (w *wsHandler) pkBattleStart() {
-	w.client.RegisterCustomEventHandler("PK_BATTLE_START_NEW", func(s string) {
-		pkbattlestartfunc(w.svc, s)
+func (ws *wsHandler) pkBattleStart() {
+	ws.client.RegisterCustomEventHandler("PK_BATTLE_START_NEW", func(s string) {
+		pkbattlestartfunc(ws.svc, s)
 	})
-	w.client.RegisterCustomEventHandler("PK_BATTLE_START", func(s string) {
-		pkbattlestartfunc(w.svc, s)
+	ws.client.RegisterCustomEventHandler("PK_BATTLE_START", func(s string) {
+		pkbattlestartfunc(ws.svc, s)
 	})
 }
 func pkbattlestartfunc(svcCtx *svc.ServiceContext, s string) {

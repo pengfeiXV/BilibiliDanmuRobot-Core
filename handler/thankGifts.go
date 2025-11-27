@@ -11,20 +11,20 @@ import (
 )
 
 // 礼物感谢
-func (w *wsHandler) thankGifts() {
-	w.client.RegisterCustomEventHandler("SEND_GIFT", func(s string) {
+func (ws *wsHandler) thankGifts() {
+	ws.client.RegisterCustomEventHandler("SEND_GIFT", func(s string) {
 		send := &entity.SendGiftText{}
 		_ = json.Unmarshal([]byte(s), send)
-		if w.svc.Config.ThanksGift {
+		if ws.svc.Config.ThanksGift {
 			logic.PushToGiftChan(send)
 		}
-		danmu.SaveBlindBoxStat(send, w.svc)
+		danmu.SaveBlindBoxStat(send, ws.svc)
 	})
-	w.client.RegisterCustomEventHandler("GUARD_BUY", func(s string) {
-		if w.svc.Config.ThanksGift {
+	ws.client.RegisterCustomEventHandler("GUARD_BUY", func(s string) {
+		if ws.svc.Config.ThanksGift {
 			send := &entity.GuardBuyText{}
 			_ = json.Unmarshal([]byte(s), send)
-			if w.svc.Config.ThanksGiftUseAt {
+			if ws.svc.Config.ThanksGiftUseAt {
 				logic.PushToGuardChan(send, &entity.DanmuMsgTextReplyInfo{
 					ReplyUid: strconv.Itoa(send.Data.Uid),
 				})
@@ -34,8 +34,8 @@ func (w *wsHandler) thankGifts() {
 		}
 	})
 
-	w.client.RegisterCustomEventHandler("COMMON_NOTICE_DANMAKU", func(s string) {
-		if w.svc.Config.ThanksGift {
+	ws.client.RegisterCustomEventHandler("COMMON_NOTICE_DANMAKU", func(s string) {
+		if ws.svc.Config.ThanksGift {
 			data := &entity.CommonNoticeDanmaku{}
 			_ = json.Unmarshal([]byte(s), data)
 			if len(data.Data.ContentSegments) == 5 &&

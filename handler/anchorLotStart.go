@@ -3,26 +3,26 @@ package handler
 import "github.com/pengfeiXV/BilibiliDanmuRobot-Core/logic"
 
 // 天选
-func (w *wsHandler) anchorLot() {
+func (ws *wsHandler) anchorLot() {
 	// 天选启动
-	w.client.RegisterCustomEventHandler("ANCHOR_LOT_START", func(s string) {
-		if w.svc.Config.InteractWord || w.svc.Config.EntryEffect || w.svc.Config.WelcomeHighWealthy {
-			w.svc.Config.InteractWord = false
-			w.svc.Config.EntryEffect = false
-			w.svc.Config.WelcomeHighWealthy = false
+	ws.client.RegisterCustomEventHandler("ANCHOR_LOT_START", func(s string) {
+		if ws.svc.Config.InteractWord || ws.svc.Config.EntryEffect || ws.svc.Config.WelcomeHighWealthy {
+			ws.svc.Config.InteractWord = false
+			ws.svc.Config.EntryEffect = false
+			ws.svc.Config.WelcomeHighWealthy = false
 		}
 		logic.PushToBulletSender("识别到天选，欢迎弹幕已临时关闭")
 	})
 	// 天选中奖
-	w.client.RegisterCustomEventHandler("ANCHOR_LOT_AWARD", func(s string) {
-		if w.svc.Config.InteractWord != w.svc.Autointerract.InteractWord {
-			w.svc.Config.InteractWord = w.svc.Autointerract.InteractWord
+	ws.client.RegisterCustomEventHandler("ANCHOR_LOT_AWARD", func(s string) {
+		if ws.svc.Config.InteractWord != ws.svc.AutoInteract.InteractWord {
+			ws.svc.Config.InteractWord = ws.svc.AutoInteract.InteractWord
 		}
-		if w.svc.Config.EntryEffect != w.svc.Autointerract.EntryEffect {
-			w.svc.Config.EntryEffect = w.svc.Autointerract.EntryEffect
+		if ws.svc.Config.EntryEffect != ws.svc.AutoInteract.EntryEffect {
+			ws.svc.Config.EntryEffect = ws.svc.AutoInteract.EntryEffect
 		}
-		if w.svc.Config.WelcomeHighWealthy != w.svc.Autointerract.WelcomeHighWealthy {
-			w.svc.Config.WelcomeHighWealthy = w.svc.Autointerract.WelcomeHighWealthy
+		if ws.svc.Config.WelcomeHighWealthy != ws.svc.AutoInteract.WelcomeHighWealthy {
+			ws.svc.Config.WelcomeHighWealthy = ws.svc.AutoInteract.WelcomeHighWealthy
 		}
 		logic.PushToBulletSender("天选结束，欢迎弹幕已恢复默认")
 	})
