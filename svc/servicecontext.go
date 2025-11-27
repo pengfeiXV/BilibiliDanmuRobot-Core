@@ -11,13 +11,14 @@ import (
 )
 
 type ServiceContext struct {
+	LiveStatus        int
 	Config            *config.Config
 	OtherSideUid      map[int64]bool
 	SignInModel       model.SignInModel
 	DanmuCntModel     model.DanmuCntModel
 	BlindBoxStatModel model.BlindBoxStatModel
 	UserID            int64 // 主播id
-	Autointerract     struct {
+	AutoInteract      struct {
 		EntryEffect        bool
 		WelcomeHighWealthy bool
 		InteractWord       bool

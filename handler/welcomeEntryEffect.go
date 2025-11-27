@@ -14,25 +14,25 @@ import (
 )
 
 // 进场特效欢迎
-func (w *wsHandler) welcomeEntryEffect() {
-	w.client.RegisterCustomEventHandler("ENTRY_EFFECT", func(s string) {
+func (ws *wsHandler) welcomeEntryEffect() {
+	ws.client.RegisterCustomEventHandler("ENTRY_EFFECT", func(s string) {
 		entry := &entity.EntryEffectText{}
 		_ = json.Unmarshal([]byte(s), entry)
 
-		if !w.svc.Config.InteractSelf && strconv.Itoa(int(entry.Data.Uid)) == w.svc.RobotID {
+		if !ws.svc.Config.InteractSelf && strconv.Itoa(int(entry.Data.Uid)) == ws.svc.RobotID {
 			return
 		}
-		if !w.svc.Config.InteractAnchor && entry.Data.Uid == w.svc.UserID {
+		if !ws.svc.Config.InteractAnchor && entry.Data.Uid == ws.svc.UserID {
 			return
 		}
 
-		if v, ok := w.svc.Config.WelcomeString[fmt.Sprint(entry.Data.Uid)]; w.svc.Config.WelcomeSwitch && ok && w.svc.Config.EntryEffect {
+		if v, ok := ws.svc.Config.WelcomeString[fmt.Sprint(entry.Data.Uid)]; ws.svc.Config.WelcomeSwitch && ok && ws.svc.Config.EntryEffect {
 			// logic.PushToBulletSender(v)
 			logic.PushToInterractChan(&logic.InterractData{
 				Uid: entry.Data.Uid,
 				Msg: v,
 			})
-		} else if w.svc.Config.EntryEffect {
+		} else if ws.svc.Config.EntryEffect {
 			logx.Info("特效欢迎")
 
 			level := ""
@@ -50,8 +50,8 @@ func (w *wsHandler) welcomeEntryEffect() {
 			msg := ""
 			if len(level) > 0 {
 				msg = fmt.Sprintf("%s %s", level, entry.Data.Uinfo.Base.Name)
-			} else if w.svc.Config.WelcomeHighWealthy {
-				if entry.Data.Uinfo.Wealth.Level >= w.svc.Config.WelcomeHighWealthyLevel {
+			} else if ws.svc.Config.WelcomeHighWealthy {
+				if entry.Data.Uinfo.Wealth.Level >= ws.svc.Config.WelcomeHighWealthyLevel {
 					msg = entry.Data.Uinfo.Base.Name
 				}
 			}
@@ -61,7 +61,7 @@ func (w *wsHandler) welcomeEntryEffect() {
 			if len(msg) > 0 {
 				logic.PushToInterractChan(&logic.InterractData{
 					Uid: entry.Data.Uid,
-					Msg: getRandomWelcome(msg, w.svc),
+					Msg: getRandomWelcome(msg, ws.svc),
 				})
 			}
 		}

@@ -2,18 +2,18 @@ package handler
 
 import "github.com/pengfeiXV/BilibiliDanmuRobot-Core/svc"
 
-func (w *wsHandler) pkBattleEnd() {
-	w.client.RegisterCustomEventHandler("PK_BATTLE_END", func(s string) {
-		cleanOtherSide(w.svc)
+func (ws *wsHandler) pkBattleEnd() {
+	ws.client.RegisterCustomEventHandler("PK_BATTLE_END", func(s string) {
+		cleanOtherSide(ws.svc)
 	})
-	w.client.RegisterCustomEventHandler("PK_END", func(s string) {
-		cleanOtherSide(w.svc)
+	ws.client.RegisterCustomEventHandler("PK_END", func(s string) {
+		cleanOtherSide(ws.svc)
 	})
-	w.client.RegisterCustomEventHandler("PK_BATTLE_CRIT", func(s string) {
-		cleanOtherSide(w.svc)
+	ws.client.RegisterCustomEventHandler("PK_BATTLE_CRIT", func(s string) {
+		cleanOtherSide(ws.svc)
 	})
-	w.client.RegisterCustomEventHandler("PK_BATTLE_SETTLE_NEW", func(s string) {
-		cleanOtherSide(w.svc)
+	ws.client.RegisterCustomEventHandler("PK_BATTLE_SETTLE_NEW", func(s string) {
+		cleanOtherSide(ws.svc)
 	})
 }
 func cleanOtherSide(svcCtx *svc.ServiceContext) {

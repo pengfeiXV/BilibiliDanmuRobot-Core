@@ -9,10 +9,10 @@ import (
 )
 
 // 禁言提醒
-func (w *wsHandler) blockUser() {
+func (ws *wsHandler) blockUser() {
 	// 禁言提醒
-	w.client.RegisterCustomEventHandler("ROOM_BLOCK_MSG", func(s string) {
-		if w.svc.Config.ShowBlockMsg {
+	ws.client.RegisterCustomEventHandler("ROOM_BLOCK_MSG", func(s string) {
+		if ws.svc.Config.ShowBlockMsg {
 			info := &entity.RoomBlockMsg{}
 			err := json.Unmarshal([]byte(s), info)
 			if err != nil {

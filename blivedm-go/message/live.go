@@ -2,6 +2,7 @@ package message
 
 import (
 	"encoding/json"
+
 	log "github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -29,7 +30,7 @@ type LiveStop struct {
 	PIsAck   bool   `json:"p_is_ack"`
 	PMsgType int    `json:"p_msg_type"`
 	Roomid   string `json:"roomid"`
-	Round    int    `json:"round"` //开启轮播时存在,轮播状态: 1正在轮播 0未轮播
+	Round    int    `json:"round"` // 开启轮播时存在,轮播状态: 1正在轮播 0未轮播
 	SendTime int64  `json:"send_time"`
 }
 

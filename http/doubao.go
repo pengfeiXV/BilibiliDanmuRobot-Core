@@ -19,16 +19,18 @@ func RequestDoubaoRobot(danmuV2 entity.DanMuV2, svcCtx *svc.ServiceContext) (str
 	}
 	client := arkruntime.NewClientWithApiKey(svcCtx.Config.Doubao.APIToken, options...)
 	ctx := context.Background()
+
+	// 以system身份发送的预设，可以自定义，每句话都要以句号结尾，防止与下一句话粘连。
 	b := strings.Builder{}
 	b.WriteString(svcCtx.Config.Doubao.Prompt)
-	b.WriteString(fmt.Sprintf("当前对话用户ID：%s，昵称：%s，身份：%s。请根据用户身份调整回复风格：对主播用管家对待主人的态度表达，对用户用可爱俏皮的风格表达。",
+	b.WriteString(fmt.Sprintf("当前对话用户ID：%s，昵称：%s，身份：%s。",
 		danmuV2.UserID, danmuV2.Username, danmuV2.Role))
 	b.WriteString(fmt.Sprintf("主播的昵称是: %s。", svcCtx.Config.UpNickname))
 	b.WriteString(fmt.Sprintf("你的昵称是: %s。", svcCtx.Config.TalkRobotCmd))
 	if svcCtx.Config.Doubao.Limit {
-		b.WriteString(fmt.Sprintf("请在%v个字内回答。", svcCtx.Config.DanmuLen))
+		b.WriteString(fmt.Sprintf("回答不多于%v个字符。", svcCtx.Config.DanmuLen))
 	}
-	req := model.CreateChatCompletionRequest{
+	req := model.ContextChatCompletionRequest{
 		Model: "doubao-seed-1-6-251015",
 		Messages: []*model.ChatCompletionMessage{
 			{
@@ -44,13 +46,9 @@ func RequestDoubaoRobot(danmuV2 entity.DanMuV2, svcCtx *svc.ServiceContext) (str
 				},
 			},
 		},
-		MaxTokens:   volcengine.Int(40),
-		ServiceTier: volcengine.String("auto"),
-		Thinking: &model.Thinking{
-			Type: "disabled",
-		},
+		MaxTokens: 100,
 	}
-	resp, err := client.CreateChatCompletion(ctx, req)
+	resp, err := client.CreateContextChatCompletion(ctx, req)
 	if err != nil {
 		return "", err
 	}

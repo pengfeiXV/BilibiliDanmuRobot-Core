@@ -6,10 +6,10 @@ import (
 )
 
 // 弹幕处理
-func (w *wsHandler) receiveDanmu() {
+func (ws *wsHandler) receiveDanmu() {
 	// 弹幕处理的功能类接口
 	locked := new(sync.Mutex)
-	w.client.RegisterCustomEventHandler("DANMU_MSG", func(s string) {
+	ws.client.RegisterCustomEventHandler("DANMU_MSG", func(s string) {
 		locked.Lock()
 		danmu.PushToBDanmuLogic(s)
 		locked.Unlock()
