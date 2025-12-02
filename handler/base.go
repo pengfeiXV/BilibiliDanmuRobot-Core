@@ -160,12 +160,13 @@ func (ws *wsHandler) StartWsClient() error {
 		ws.svc.LiveStatus = entity.NotStarted
 	})
 	done := make(chan struct{})
+	ticker := time.NewTicker(1 * time.Minute)
 	go func() {
 		for {
 			select {
 			case <-done:
 				return
-			case <-time.NewTicker(1 * time.Minute).C:
+			case <-ticker.C:
 				ws.refreshLiveStatus()
 			}
 		}
@@ -363,7 +364,7 @@ func (ws *wsHandler) corndanmuStart() {
 	ws.cronDanmu.Start()
 }
 func (ws *wsHandler) refreshLiveStatus() {
-	roomInfo, err := http.RoomInit(int(ws.svc.UserID))
+	roomInfo, err := http.RoomInit(ws.svc.Config.RoomId)
 	if err != nil {
 		logx.Error(err)
 		return
