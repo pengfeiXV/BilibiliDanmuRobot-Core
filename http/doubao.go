@@ -10,6 +10,7 @@ import (
 	"github.com/volcengine/volcengine-go-sdk/service/arkruntime"
 	"github.com/volcengine/volcengine-go-sdk/service/arkruntime/model"
 	"github.com/volcengine/volcengine-go-sdk/volcengine"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 func RequestDoubaoRobot(danmuV2 entity.DanMuV2, svcCtx *svc.ServiceContext) (string, error) {
@@ -30,7 +31,7 @@ func RequestDoubaoRobot(danmuV2 entity.DanMuV2, svcCtx *svc.ServiceContext) (str
 	if svcCtx.Config.Doubao.Limit {
 		b.WriteString(fmt.Sprintf("回答不多于%v个字符。", svcCtx.Config.DanmuLen))
 	}
-	req := model.ContextChatCompletionRequest{
+	req := model.CreateChatCompletionRequest{
 		Model: "doubao-seed-1-6-251015",
 		Messages: []*model.ChatCompletionMessage{
 			{
@@ -46,11 +47,13 @@ func RequestDoubaoRobot(danmuV2 entity.DanMuV2, svcCtx *svc.ServiceContext) (str
 				},
 			},
 		},
-		MaxTokens: 100,
+		MaxTokens: volcengine.Int(100),
 	}
-	resp, err := client.CreateContextChatCompletion(ctx, req)
+	resp, err := client.CreateChatCompletion(ctx, req)
 	if err != nil {
+		logx.Errorf("请求doubao失败：%v", err)
 		return "", err
 	}
+	logx.Infof("请求doubao成功：%v", resp)
 	return *resp.Choices[0].Message.Content.StringValue, nil
 }
