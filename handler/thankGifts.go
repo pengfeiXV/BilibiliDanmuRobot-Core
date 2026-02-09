@@ -15,7 +15,7 @@ func (ws *wsHandler) thankGifts() {
 	ws.client.RegisterCustomEventHandler("SEND_GIFT", func(s string) {
 		send := &entity.SendGiftText{}
 		_ = json.Unmarshal([]byte(s), send)
-		if ws.svc.Config.ThanksGift {
+		if ws.svc.Config.GiftStat {
 			logic.PushToGiftChan(send)
 		}
 		danmu.SaveBlindBoxStat(send, ws.svc)

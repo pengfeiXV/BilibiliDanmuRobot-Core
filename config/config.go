@@ -73,6 +73,7 @@ type Config struct {
 	ThanksGiftTimeout      int  `json:",default=3"`     // 礼物统计时间
 	ThanksBlindBoxTimeout  int  `json:",default=6"`     // 盲盒统计时间
 	ThanksMinCost          int  `json:",default=0"`     // 最小感谢礼物价值
+	GiftStat               bool `json:",default=true"`  // 礼物统计
 	BlindBoxProfitLossStat bool `json:",default=true"`  // 盲盒盈亏统计
 	ThanksGiftUseAt        bool `json:",default=false"` // 使用@模式感谢
 

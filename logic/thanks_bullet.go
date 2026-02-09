@@ -65,7 +65,7 @@ func ThanksGift(ctx context.Context, svcCtx *svc.ServiceContext) {
 			goto END
 		case <-t.C:
 			thanksGiver.locked.Lock()
-			summarizeGift(svcCtx.Config.DanmuLen, svcCtx.Config.ThanksMinCost, svcCtx)
+			summarizeAndThankGift(svcCtx.Config.DanmuLen, svcCtx.Config.ThanksMinCost, svcCtx)
 			thanksGiver.locked.Unlock()
 			t.Reset(w)
 		case g = <-thanksGiver.giftChan:
@@ -183,8 +183,12 @@ func summarizeBlindGift(danmuLen int, svcCtx *svc.ServiceContext) {
 	}
 }
 
-func summarizeGift(danmuLen int, minCost int, svcCtx *svc.ServiceContext) {
+func summarizeAndThankGift(danmuLen int, minCost int, svcCtx *svc.ServiceContext) {
 	for name, m := range thanksGiver.giftNotBlindBoxTable {
+		if !svcCtx.Config.ThanksGift {
+			delete(thanksGiver.giftNotBlindBoxTable, name)
+			continue
+		}
 		sumCost := 0
 		giftstring := []string{}
 		msg := ""
