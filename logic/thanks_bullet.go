@@ -11,6 +11,7 @@ import (
 
 	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/entity"
 	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/svc"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 // 检测到礼物，push [uname]->[giftName]->[cost]，number+1
@@ -70,6 +71,8 @@ func ThanksGift(ctx context.Context, svcCtx *svc.ServiceContext) {
 			t.Reset(w)
 		case g = <-thanksGiver.giftChan:
 			thanksGiver.locked.Lock()
+			logx.Info("receive gift info:")
+			logx.Infof("%v", g)
 
 			if svcCtx.Config.ThanksGiftUseAt {
 				thanksGiver.giftNameUidTable[g.Data.Uname] = g.Data.UID

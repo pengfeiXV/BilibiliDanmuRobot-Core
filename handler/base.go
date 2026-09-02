@@ -370,7 +370,6 @@ func (ws *wsHandler) refreshLiveStatus() {
 		return
 	}
 	ws.svc.LiveStatus = roomInfo.Data.LiveStatus
-	logx.Info("live status is ", roomInfo.Data.LiveStatus)
 }
 func mustloadConfig() (*svc.ServiceContext, error) {
 	dir := "./token"
