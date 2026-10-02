@@ -4,15 +4,16 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"github.com/avast/retry-go/v4"
-	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/entity"
-	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/svc"
-	"github.com/zeromicro/go-zero/core/logx"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/avast/retry-go/v4"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/entity"
+	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/svc"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 // func GetDanmuInfo(svcCtx *svc.ServiceContext) (*entity.ResponseBulletInfo, error) {
@@ -69,7 +70,7 @@ func Send(msg string, svcCtx *svc.ServiceContext, reply ...*entity.DanmuMsgTextR
 			return nil
 		}
 		if respdata.Code != 0 {
-			logx.Infof("请求send失败:%s", respdata.Msg)
+			logx.Infof("请求send失败:%d, %s", respdata.Code, respdata.Msg)
 			return errors.New(respdata.Msg)
 		}
 		if respdata.Msg == "f" {
