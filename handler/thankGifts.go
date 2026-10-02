@@ -8,14 +8,19 @@ import (
 	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/entity"
 	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/logic"
 	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/logic/danmu"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 // 礼物感谢
 func (ws *wsHandler) thankGifts() {
 	ws.client.RegisterCustomEventHandler("SEND_GIFT", func(s string) {
 		send := &entity.SendGiftText{}
-		_ = json.Unmarshal([]byte(s), send)
+		err := json.Unmarshal([]byte(s), send)
+		if err != nil {
+			logx.Errorf("thankGifts json.Unmarshal err: %v, %s", err, s)
+		}
 		if ws.svc.Config.GiftStat {
+			logx.Infof("thankGifts gift send: %v", send)
 			logic.PushToGiftChan(send)
 		}
 		danmu.SaveBlindBoxStat(send, ws.svc)
