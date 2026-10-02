@@ -2,13 +2,14 @@ package client
 
 import (
 	"fmt"
+	"regexp"
+	"runtime/debug"
+	"strings"
+
 	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/blivedm-go/message"
 	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/blivedm-go/packet"
 	"github.com/pengfeiXV/BilibiliDanmuRobot-Core/blivedm-go/utils"
 	log "github.com/zeromicro/go-zero/core/logx"
-	"regexp"
-	"runtime/debug"
-	"strings"
 )
 
 var (
@@ -83,6 +84,7 @@ func (c *Client) OnUserToast(f func(*message.UserToast)) {
 func (c *Client) Handle(p packet.Packet) {
 	switch p.Operation {
 	case packet.Notification:
+		log.Infof("receive notification: %s", string(p.Body))
 		cmd := parseCmd(p.Body)
 		sb := utils.BytesToString(p.Body)
 		// 新的弹幕 cmd 可能带参数
