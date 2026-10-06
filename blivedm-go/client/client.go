@@ -99,16 +99,16 @@ func (c *Client) init() error {
 	return nil
 }
 
-// 1
 func (c *Client) connect() error {
 	reqHeader := &http.Header{}
 	reqHeader.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36")
 retry:
 	c.host = c.hostList[c.retryCount%len(c.hostList)]
 	c.retryCount++
-	conn, res, err := websocket.DefaultDialer.Dial(fmt.Sprintf("wss://%s/sub", c.host), *reqHeader)
+	url := fmt.Sprintf("wss://%s/sub", c.host)
+	conn, res, err := websocket.DefaultDialer.Dial(url, *reqHeader)
 	if err != nil {
-		log.Errorf("connect dial failed, retry %d times", c.retryCount)
+		log.Errorf("connect dial failed, retry %d times, url: %s", c.retryCount, url)
 		time.Sleep(2 * time.Second)
 		goto retry
 	}
