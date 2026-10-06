@@ -103,7 +103,6 @@ func (c *Client) connect() error {
 	reqHeader := &http.Header{}
 	reqHeader.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36")
 	reqHeader.Set("cookie", c.Cookie)
-	reqHeader.Set("Sec-WebSocket-Version", "13")
 retry:
 	c.host = c.hostList[c.retryCount%len(c.hostList)]
 	c.retryCount++
